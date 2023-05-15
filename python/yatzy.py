@@ -112,26 +112,42 @@ class Yatzy:
     @staticmethod
     def smallStraight(d1, d2, d3, d4, d5):
         counts = Counter([d1, d2, d3, d4, d5])
-        if (1 in counts and 2 in counts and 3 in counts and 4 in counts) or (
-                2 in counts and 3 in counts and 4 in counts and 5 in counts) or (
-                3 in counts and 4 in counts and 5 in counts and 6 in counts):
+        comb1, comb2, comb3 = Yatzy.check_comb_for_small_straight(counts)
+        if comb1 or comb2 or comb3:
             return POINTS_15
         return 0
 
     @staticmethod
+    def check_comb_for_small_straight(counts):
+        comb1 = all(i in counts for i in range(1, 5))
+        comb2 = all(i in counts for i in range(2, 6))
+        comb3 = all(i in counts for i in range(3, 7))
+        return comb1, comb2, comb3
+
+    @staticmethod
     def largeStraight(d1, d2, d3, d4, d5):
         tallies = Counter([d1, d2, d3, d4, d5])
-        first_combination = all(tallies[i] == 1 for i in range(1, 6))
-        second_combination = all(tallies[i] == 1 for i in range(2, 7))
+        first_combination, second_combination = Yatzy.check_combinations(tallies)
         if first_combination or second_combination:
             return POINTS_20
         return 0
 
     @staticmethod
+    def check_combinations(tallies):
+        first_combination = all(tallies[i] == 1 for i in range(1, 6))
+        second_combination = all(tallies[i] == 1 for i in range(2, 7))
+        return first_combination, second_combination
+
+    @staticmethod
     def fullHouse(d1, d2, d3, d4, d5):
         tallies = Counter([d1, d2, d3, d4, d5])
         if 3 in tallies.values() and 2 in tallies.values():
-            pairs = [key for key, val in tallies.items() if val == 2]
-            threes = [key for key, val in tallies.items() if val == 3]
+            pairs, threes = Yatzy.check_full_house(tallies)
             return pairs[0] * 2 + threes[0] * 3
         return 0
+
+    @staticmethod
+    def check_full_house(tallies):
+        pairs = [key for key, val in tallies.items() if val == 2]
+        threes = [key for key, val in tallies.items() if val == 3]
+        return pairs, threes
